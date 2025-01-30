@@ -1,0 +1,11 @@
+# Distribution / packaging
+.venv
+
+# Flask specific
+instance/
+.webassets-cache
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class

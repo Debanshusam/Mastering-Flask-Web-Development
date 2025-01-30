@@ -2,9 +2,9 @@
 from app import create_app, db
 #from app.exceptions.db import DuplicateRecordException
 from werkzeug.exceptions import HTTPException
-from flask import g, session, request, redirect, make_response, render_template
+from flask import Flask, g, session, request, redirect, make_response, render_template
 from datetime import datetime
-app = create_app('../config_dev.toml')
+app: Flask = create_app('../config_dev.toml')
 
 def get_database():
     if 'db' not in g:
@@ -35,13 +35,13 @@ def init_request():
     elif (( request.endpoint == 'login_db_auth' and  request.endpoint != 'index' and request.endpoint != 'static')  and 'username' in session):
         app.logger.info('a user is already logged in')
         return redirect('/menu')
-    
+
 @app.after_request
 def return_response(response):
     if ( request.endpoint != 'static'):
         app.logger.info(f'{request.endpoint} done executing')
     return response
-       
+
 @app.errorhandler(404)
 def not_found(e):
     return make_response(render_template("error/404.html", title="Page not found"), 404)
@@ -52,12 +52,12 @@ def bad_request(e):
 
 def server_error(e):
     print(e)
-    return make_response(render_template("error/500.html", title="Internal server error"), 500) 
+    return make_response(render_template("error/500.html", title="Internal server error"), 500)
 
 #@app.errorhandler(DuplicateRecordException)
 #def insert_record_exception(e):
 #    print(e)
-#    return make_response(render_template("error/insert_rec.html", title="Internal server error", ex_message=e), 500)  
+#    return make_response(render_template("error/insert_rec.html", title="Internal server error", ex_message=e), 500)
 
 app.register_error_handler(500, server_error)
 #app.register_error_handler(DuplicateRecordException, insert_record_exception)
@@ -73,4 +73,3 @@ def handle_built_exception(e):
 
 if __name__ == '__main__':
     app.run()
-    

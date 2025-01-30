@@ -20,15 +20,23 @@ def assign_exam():
         pid = int(request.form['pid'])
         exam_date = request.form['exam_date']
         duration = int(request.form['duration'])
-        result = insert_question_details(id=id, cid=cid, pid=pid, exam_date=exam_date, duration=duration)
+        result = insert_question_details(
+            id=id, cid=cid, pid=pid,
+            exam_date=exam_date, duration=duration
+            )
         if result:
             task_token = request.cookies.get('exam_token')
             task = "exam assignment (task id {})".format(task_token)
-            return redirect(url_for('redirect_success_exam', message=task ))
+            return redirect(
+                location=url_for(
+                    endpoint='redirect_success_exam',
+                    message=task
+                    )
+                )
         else:
             return redirect('/exam/task/error')
-    
-    
+
+
 @app.route('/exam/success', methods=['GET'])
 def redirect_success_exam():
     message = request.args['message']
@@ -60,7 +68,7 @@ def record_score():
             return response, 302
         else:
             return redirect('/exam/task/error')
-     
+
 @app.route('/exam/item/add', methods = ['GET', 'POST'])
 def add_exam_item():
     if request.method == 'GET':
@@ -96,7 +104,7 @@ def add_exam_item():
 @app.route('/exam/details/list')
 def report_exam_list():
     exams = list_exam_details()
-    response = make_response(render_template('exam/list_exams.html', exams=exams), 200)   
+    response = make_response(render_template('exam/list_exams.html', exams=exams), 200)
     headers = dict()
     headers['Content-Type'] = 'application/vnd.ms-excel'
     headers['Content-Disposition'] = 'attachment;filename=questions.xls'
@@ -106,6 +114,6 @@ def report_exam_list():
 @app.route('/exam/passers/list/<float:rate>/<uuid:docId>')
 def report_exam_passers(rate:float, docId:uuid4 = None):
     exams = list_passing_scores(rate)
-    response = make_response(render_template('exam/list_exam_passers.html', exams=exams, docId=docId), 200)   
+    response = make_response(render_template('exam/list_exam_passers.html', exams=exams, docId=docId), 200)
     return response
 
